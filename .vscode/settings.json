@@ -1,5 +1,5 @@
 {
-  "C_Cpp.intelliSenseEngine": "Tag Parser",
+  "C_Cpp.intelliSenseEngine": "Default",
   "idf.adapterTargetName": "esp32s3",
   "idf.openOcdConfigs": [
     "board/esp32s3-builtin.cfg"
@@ -28,6 +28,7 @@
     "type_traits": "c",
     "utility": "c",
     "*.inc": "c",
-    "*.ipp": "c"
+    "*.ipp": "c",
+    "random": "c"
   }
 }

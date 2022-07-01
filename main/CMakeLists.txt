@@ -1,2 +1,2 @@
-idf_component_register(SRCS "src/main.c" "src/sensor.c"
+idf_component_register(SRCS "src/sensor.c" "src/harp.c" "src/main.c"
     INCLUDE_DIRS "include")
