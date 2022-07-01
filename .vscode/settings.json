@@ -1,0 +1,33 @@
+{
+  "C_Cpp.intelliSenseEngine": "Tag Parser",
+  "idf.adapterTargetName": "esp32s3",
+  "idf.openOcdConfigs": [
+    "board/esp32s3-builtin.cfg"
+  ],
+  "idf.flashType": "UART",
+  "idf.portWin": "COM3",
+  "files.associations": {
+    "*.c": "c",
+    "*.lds": "linkerscript",
+    "*.xaml": "xml",
+    "*.pl": "prolog",
+    "*.make": "makefile",
+    "*.json": "jsonc",
+    "Makefile.*": "makefile",
+    "*.h": "c",
+    "*.tcc": "c",
+    "optional": "c",
+    "istream": "c",
+    "ostream": "c",
+    "ratio": "c",
+    "system_error": "c",
+    "array": "c",
+    "functional": "c",
+    "regex": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "*.inc": "c",
+    "*.ipp": "c"
+  }
+}
