@@ -27,7 +27,7 @@ static void harp_state_init(harp_state_t *state) {
 
 esp_err_t harp_init(harp_t *harp, const harp_config_t *config) {
     harp->config = *config;
-    harp->flipped = false;
+    harp->flipped = true; // default to flipped
 
     harp_state_init(&harp->current);
     harp_state_init(&harp->previous);
@@ -95,7 +95,16 @@ esp_err_t harp_update(harp_t *harp) {
     harp->current.active = false;
 
     if (harp->current.x != -1 && harp->current.y != -1) {
-        note = harp_scale[harp->config.size - 1 - harp->current.y][harp->config.size - 1 - harp->current.x];
+        int x;
+        int y;
+        if (harp->flipped) {
+            x = harp->config.size - 1 - harp->current.y;
+            y = harp->config.size - 1 - harp->current.x;
+        } else {
+            x = harp->current.x;
+            y = harp->current.y;
+        }
+        note = harp_scale[x][y];
 
         if (note != -1) {
             harp->current.active = true;
@@ -139,5 +148,10 @@ esp_err_t harp_update(harp_t *harp) {
     fflush(stdout);
 
     harp->previous = harp->current;
+    return ESP_OK;
+}
+
+esp_err_t harp_flip(harp_t *harp) {
+    harp->flipped = !harp->flipped;
     return ESP_OK;
 }

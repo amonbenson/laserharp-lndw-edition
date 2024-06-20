@@ -30,3 +30,5 @@ typedef struct {
 esp_err_t harp_init(harp_t *harp, const harp_config_t *config);
 
 esp_err_t harp_update(harp_t *harp);
+
+esp_err_t harp_flip(harp_t *harp);
