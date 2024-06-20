@@ -6,7 +6,7 @@
 
 static const char *TAG = "harp";
 
-static const int harp_scale[8][8] = {
+static const int harp_scale[8][8] __attribute__((unused)) = {
     { -1, C5, Db5,A5, Bb5,Gb6,-1, D7 },
     { C4, Db4,D5, Eb5,B5, -1, G6, Ab6},
     { Gb3,D4, Eb4,E5, -1, C6, Db6,A6 },
@@ -31,17 +31,18 @@ esp_err_t harp_init(harp_t *harp, const harp_config_t *config) {
 
     harp_state_init(&harp->current);
     harp_state_init(&harp->previous);
+    harp_state_init(&harp->prevraw);
 
     const sensor_config_t sensor_config = {
         .num_channels = harp->config.size,
         .index_lut = harp->config.sensor_index_lut,
         .adc = {
-            .width = ADC_WIDTH_12Bit,
-            .atten = ADC_ATTEN_11db
+            .width = ADC_WIDTH_BIT_12,
+            .atten = ADC_ATTEN_DB_11
         },
         .calibration = {
             .iterations = harp->config.calibration_iterations,
-            .threshold = 50
+            .threshold = 120
         }
     };
     ESP_RETURN_ON_ERROR(sensor_init(&harp->sensor, &sensor_config),
@@ -73,9 +74,8 @@ static int harp_read_sensors(harp_t *harp, int offset, int previous) {
     }
 
     // exactly one sensor must be active
-    if (count != 1) return -1;
-
-    return current;
+    if (count == 1) return current;
+    else return -1;
 }
 
 esp_err_t harp_update(harp_t *harp) {
@@ -89,13 +89,13 @@ esp_err_t harp_update(harp_t *harp) {
     harp->current.y = harp_read_sensors(harp, harp->config.size, harp->previous.y);
 
     // return if the position did not change
-    if (harp->current.x == harp->previous.x && harp->current.y == harp->previous.y) return;
+    if (harp->current.x == harp->previous.x && harp->current.y == harp->previous.y) return ESP_OK;
 
     // get the active note
     harp->current.active = false;
 
     if (harp->current.x != -1 && harp->current.y != -1) {
-        note = harp_scale[harp->current.y][harp->current.x];
+        note = harp_scale[harp->config.size - 1 - harp->current.y][harp->config.size - 1 - harp->current.x];
 
         if (note != -1) {
             harp->current.active = true;
@@ -111,6 +111,18 @@ esp_err_t harp_update(harp_t *harp) {
         }
     }
 
+    /*
+    // release previous note
+    if (harp->previous.active) {
+        printf("RELEASE %d %d -> %d\n", harp->previous.x, harp->previous.y, harp->previous.note);
+    }
+
+    // press current note
+    if (harp->current.active) {
+        printf("PRESS %d %d -> %d\n", harp->current.x, harp->current.y, harp->current.note);
+    }
+    */
+
     // release previous note
     if (harp->previous.active) {
         putchar(0x90);
@@ -124,7 +136,7 @@ esp_err_t harp_update(harp_t *harp) {
         putchar(harp->current.note);
         putchar(127);
     }
-    putchar('\n');
+    fflush(stdout);
 
     harp->previous = harp->current;
     return ESP_OK;

@@ -22,6 +22,7 @@ typedef struct {
 
     harp_state_t current;
     harp_state_t previous;
+    harp_state_t prevraw;
     bool flipped;
 } harp_t;
 
